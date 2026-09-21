@@ -1,12 +1,9 @@
-OUTPUT_FORMAT("binary")
-ENTRY(loader)
-
 SECTIONS
 {
-    . = 0x00100000;
-
+    . = 0x9000;
+    
     .text : {
-        *(.multiboot)
+        boot/kernel_entry.o(.ktext)
         *(.text)
     }
 
@@ -20,6 +17,7 @@ SECTIONS
 
     .bss : {
         *(COMMON)
+        boot/kernel_entry.o(.kbss)
         *(.bss)
     }
 }

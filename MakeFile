@@ -1,25 +1,34 @@
 CC = gcc
 CFLAGS = -m32 -ffreestanding -O2 -Wall -Wextra -Ikernel
 ASM = nasm
-ASMFLAGS = -f win32
 
 C_SOURCES = $(wildcard kernel/*.c)
-ASM_SOURCES = $(wildcard boot/*.asm kernel/*.asm)
-
-OBJ = $(C_SOURCES:.c=.o) $(ASM_SOURCES:.asm=.o)
+# Split our core objects away from the isolated boot loader
+KERNEL_OBJ = kernel/graphics.o kernel/idt.o kernel/kernel.o kernel/keyboard.o kernel/mouse.o \
+             boot/kernel_entry.o kernel/interrupt.o
 
 all: os-image.bin
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Standard assembly rule for 32-bit kernel object stubs
 %.o: %.asm
-	$(ASM) $(ASMFLAGS) $< -o $@
+	$(ASM) -f win32 $< -o $@
 
-os-image.bin: $(OBJ)
-	ld -m i386pe --image-base 0x00000000 -o os-image.tmp boot/boot.o kernel/graphics.o kernel/idt.o kernel/kernel.o kernel/keyboard.o kernel/mouse.o kernel/interrupt.o
-	objcopy -O binary -j .text -j .rodata os-image.tmp os-image.bin
-	rm -f os-image.tmp
+# Main target rule
+os-image.bin: $(KERNEL_OBJ)
+	# 1. Assemble the bootloader directly as a raw 512-byte flat binary block
+	$(ASM) -f bin boot/boot.asm -o boot.bin
+	
+	# 2. Link all the C kernel files into a flat binary starting at 0x9000
+	ld -m i386pe -T linker.ld -o kernel.tmp $(KERNEL_OBJ)
+	objcopy -O binary kernel.tmp kernel.bin
+	rm -f kernel.tmp
+	
+	# 3. Concatenate the 512-byte bootloader and the kernel into our final image
+	cat boot.bin kernel.bin > os-image.bin
+	rm -f boot.bin kernel.bin
 
 clean:
-	rm -f kernel/*.o boot/*.o *.bin
+	rm -f kernel/*.o boot/*.o *.bin *.tmp
