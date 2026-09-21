@@ -1,29 +1,27 @@
-
+# input device support
 
 ## Keyboard Driver (IRQ1)
 
-Reliable interrupt-driven keyboard input, scancode translation, and circular buffering.*
+### Reliable interrupt-driven keyboard input, scancode translation, and circular buffering.
 
-* **PIC & IDT Initialization:** Remap the Programmable Interrupt Controller (PIC) chips (Master and Slave) and write an assembly stub to register the Interrupt Service Routine (ISR) for IRQ1 at interrupt vector `0x21`.
-
-
-* **Port Communication (`inb`):** Implement the low-level port reading helper function to poll or capture raw Set 1 scancodes coming from IO port `0x60`.
-* **Scancode Translation & Circular Queue:** Build a scancode-to-ASCII lookup array (handling key presses vs. releases via the `0x80` break bit) and push processed characters into a thread-safe circular buffer queue.
-* **Milestone Check:** Type keys inside QEMU and verify they echo back correctly through your kernel's text or graphics output buffer.
+> PIC & IDT Initialization:** Remap the Programmable Interrupt Controller (PIC) chips (Master and Slave) and write an assembly stub to register the Interrupt Service Routine (ISR) for IRQ1 at interrupt vector `0x21`.
+> Port Communication (`inb`):** Implement the low-level port reading helper function to poll or capture raw Set 1 scancodes coming from IO port `0x60`.
+> Scancode Translation & Circular Queue:** Build a scancode-to-ASCII lookup array (handling key presses vs. releases via the `0x80` break bit) and push processed characters into a thread-safe circular buffer queue.
+> Milestone Check:** Type keys inside QEMU and verify they echo back correctly through your kernel's text or graphics output buffer.
 
 ---
 
-#### **Block 2: Afternoon — PS/2 Mouse Driver (IRQ12)**
+## PS/2 Mouse Driver (IRQ12)
 
-*Objective: Initialize the auxiliary mouse device, catch 3-byte movement packets, and manage screen boundaries.*
+### auxiliary mouse device, catch 3-byte movement packets, and manage screen boundaries.
 
-* **Controller Enable:** Send command byte `0xA8` to the PS/2 controller status port (`0x64`) to enable the auxiliary mouse port, and enable IRQ12 (vector `0x2C`). Set up the mouse streaming mode (`0xF4`).
+> Controller Enable:** Send command byte `0xA8` to the PS/2 controller status port (`0x64`) to enable the auxiliary mouse port, and enable IRQ12 (vector `0x2C`). Set up the mouse streaming mode (`0xF4`).
 
 
-* **Packet Stream Parsing:** Catch incoming interrupts, maintaining a 3-byte packet index counter:
-* Byte 1: Status flags (Y overflow, X overflow, Sign bits, Left/Right button states).
-* Byte 2: Relative movement delta $dX$.
-* Byte 3: Relative movement delta $dY$.
+> **Packet Stream Parsing:** Catch incoming interrupts, maintaining a 3-byte packet index counter:
+> Byte 1: Status flags (Y overflow, X overflow, Sign bits, Left/Right button states).
+> Byte 2: Relative movement delta $dX$.
+> Byte 3: Relative movement delta $dY$.
 
 
 * **Boundary Clamping:** Convert relative deltas to absolute screen coordinates $(X, Y)$ and clamp them strictly within your current graphics mode resolution limits (e.g., $800 \times 600$ or $1024 \times 768$).
