@@ -47,12 +47,12 @@ void pic_remap(void) {
 
 void idt_init(void) {
     idtp.limit = (sizeof(struct idt_entry) * 256) - 1;
-    idtp.base = (uint32_t)&idt;
+    idtp.base = (unsigned long)&idt;
 
     pic_remap();
 
     // Map keyboard handler to IRQ1 (Vector 0x21)
-    idt_set_gate(0x21, (uint32_t)keyboard_handler_stub, 0x08, 0x8E);
+    idt_set_gate(0x21, (unsigned long)keyboard_handler_stub, 0x08, 0x8E);
 
     // Load IDT
     __asm__ volatile("lidt (%0)" : : "r" (&idtp));
