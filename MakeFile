@@ -17,8 +17,8 @@ all: os-image.bin
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 os-image.bin: $(OBJ)
-	ld -m i386pe -o os-image.tmp $(OBJ)
-	objcopy -O binary os-image.tmp os-image.bin
+	ld -m i386pe --image-base 0x00000000 -o os-image.tmp boot/boot.o kernel/graphics.o kernel/idt.o kernel/kernel.o kernel/keyboard.o kernel/mouse.o kernel/interrupt.o
+	objcopy -O binary -j .text -j .rodata os-image.tmp os-image.bin
 	rm -f os-image.tmp
 
 clean:

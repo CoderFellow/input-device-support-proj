@@ -35,11 +35,12 @@ void keyboard_handler_main(void) {
 }
 
 // Assembly wrapper stub for the ISR
+// Assembly wrapper stub for the ISR
 __asm__ (
-    ".global keyboard_handler_stub\n"
-    "keyboard_handler_stub:\n"
+    ".global _keyboard_handler_stub\n"
+    "_keyboard_handler_stub:\n"
     "    pushal\n"
-    "    call keyboard_handler_main\n"
+    "    call _keyboard_handler_main\n"
     "    popal\n"
     "    iret\n"
 );
