@@ -1,0 +1,26 @@
+CC = gcc
+CFLAGS = -ffreestanding -O2 -Wall -Wextra -Ikernel
+ASM = nasm
+ASMFLAGS = -f elf32
+
+# Find all source files
+C_SOURCES = $(wildcard kernel/*.c)
+ASM_SOURCES = $(wildcard boot/*.asm kernel/*.asm)
+
+# Object files output
+OBJ = $(C_SOURCES:.c=.o) $(ASM_SOURCES:.asm=.o)
+
+all: os-image.bin
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.asm
+	$(ASM) $(ASMFLAGS) $< -o $@
+
+os-image.bin: $(OBJ) linker.ld
+	# Link object files according to your linker.ld script
+	ld -m i386pe -T linker.ld -o os-image.bin $(OBJ)
+
+clean:
+	rm -f kernel/*.o boot/*.o *.bin
