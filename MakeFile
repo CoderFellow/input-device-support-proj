@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -m32 -ffreestanding -O2 -Wall -Wextra -Ikernel
 ASM = nasm
-ASMFLAGS = -f elf32
+ASMFLAGS = -f win32
 
 C_SOURCES = $(wildcard kernel/*.c)
 ASM_SOURCES = $(wildcard boot/*.asm kernel/*.asm)
@@ -16,8 +16,10 @@ all: os-image.bin
 %.o: %.asm
 	$(ASM) $(ASMFLAGS) $< -o $@
 
-os-image.bin: $(OBJ) linker.ld
-	ld -m elf_i386 -T linker.ld -o os-image.bin $(OBJ)
+os-image.bin: $(OBJ)
+	ld -m i386pe -o os-image.tmp $(OBJ)
+	objcopy -O binary os-image.tmp os-image.bin
+	rm -f os-image.tmp
 
 clean:
 	rm -f kernel/*.o boot/*.o *.bin
