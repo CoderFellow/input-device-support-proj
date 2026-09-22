@@ -1,5 +1,6 @@
 #ifndef KERNEL_H
 #define KERNEL_H
+void serial_print(const char* str);
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

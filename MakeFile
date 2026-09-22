@@ -2,33 +2,63 @@ CC = gcc
 CFLAGS = -m32 -ffreestanding -O2 -Wall -Wextra -Ikernel
 ASM = nasm
 
-C_SOURCES = $(wildcard kernel/*.c)
-# Split our core objects away from the isolated boot loader
-KERNEL_OBJ = kernel/graphics.o kernel/idt.o kernel/kernel.o kernel/keyboard.o kernel/mouse.o \
-             boot/kernel_entry.o kernel/interrupt.o
+OBJ = boot/kernel_entry.o \
+      kernel/graphics.o \
+      kernel/idt.o \
+      kernel/kernel.o \
+      kernel/keyboard.o \
+      kernel/mouse.o \
+      kernel/interrupt.o
 
 all: os-image.bin
 
-%.o: %.c
+kernel/graphics.o: kernel/graphics.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Standard assembly rule for 32-bit kernel object stubs
-%.o: %.asm
+kernel/idt.o: kernel/idt.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+kernel/kernel.o: kernel/kernel.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+kernel/keyboard.o: kernel/keyboard.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+kernel/mouse.o: kernel/mouse.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+boot/kernel_entry.o: boot/kernel_entry.asm
 	$(ASM) -f win32 $< -o $@
 
-# Main target rule
-os-image.bin: $(KERNEL_OBJ)
+kernel/interrupt.o: kernel/interrupt.asm
+	$(ASM) -f win32 $< -o $@
+
+# Hardcoded linkage recipe to eliminate MSYS2 macro path expansion bugs
+os-image.bin: $(OBJ)
 	# 1. Assemble the bootloader directly as a raw 512-byte flat binary block
 	$(ASM) -f bin boot/boot.asm -o boot.bin
 	
-	# 2. Link all the C kernel files into a flat binary starting at 0x9000
-	ld -m i386pe -T linker.ld -o kernel.tmp $(KERNEL_OBJ)
-	objcopy -O binary kernel.tmp kernel.bin
+	# 2. Link using compressed alignments to eliminate Windows PE padding artifacts
+	ld -m i386pe --image-base 0x00009000 --file-alignment 32 --section-alignment 32 --gc-sections -s -T linker.ld -o kernel.tmp \
+		boot/kernel_entry.o \
+		kernel/graphics.o \
+		kernel/idt.o \
+		kernel/kernel.o \
+		kernel/keyboard.o \
+		kernel/mouse.o \
+		kernel/interrupt.o
+	
+	# 3. Strip Windows PE metadata AND all structural data padding sections completely
+	objcopy -O binary -S -g -R .note -R .comment -R .reloc -R .rdata -R .eh_frame kernel.tmp kernel.bin
 	rm -f kernel.tmp
 	
-	# 3. Concatenate the 512-byte bootloader and the kernel into our final image
-	cat boot.bin kernel.bin > os-image.bin
+	# 4. FIXED: Concatenate targets and pad out to an absolute 1.44MB physical layout geometry
+	cat boot.bin kernel.bin > os-image.tmp
 	rm -f boot.bin kernel.bin
+	dd if=os-image.tmp of=os-image.bin bs=1440k count=1 conv=sync
+	rm -f os-image.tmp
+
+
 
 clean:
 	rm -f kernel/*.o boot/*.o *.bin *.tmp

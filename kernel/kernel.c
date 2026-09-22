@@ -1,6 +1,8 @@
 #include "kernel.h"
 
-// Send a character to COM1 serial port
+void mouse_init(void);
+
+// Explicitly send characters inline to avoid pointer offset lookups
 static inline void serial_putchar(char c) {
     __asm__ volatile ("outb %0, %1" : : "a"(c), "Nd"((uint16_t)0x3F8));
 }
@@ -12,20 +14,25 @@ void serial_print(const char* str) {
 }
 
 void kernel_main(void) {
-    serial_print("[KERNEL] Booted successfully!\n");
+    // Force greetings straight onto the stack cache layout
+    char boot_msg[] = {'[', 'K', 'E', 'R', 'N', 'E', 'L', ']', ' ', 'B', 'o', 'o', 't', 'e', 'd', '!', '\n', '\0'};
+    serial_print(boot_msg);
 
-    // VGA text buffer output
+    char visual_msg[] = {'O', 'S', ' ', 'P', 'r', 'o', 't', 'o', 't', 'y', 'p', 'e', ' ', 
+                         'L', 'o', 'a', 'd', 'e', 'd', '.', ' ', 'T', 'y', 'p', 'e', ' ', 
+                         'a', 'w', 'a', 'y', ':', '\0'};
+
     char* vga = (char*) 0xB8000;
-    const char* msg = "OS Prototype Loaded. Type away:";
-    for (int i = 0; msg[i] != '\0'; i++) {
-        vga[i * 2] = msg[i];
-        vga[i * 2 + 1] = 0x0F;
+    for (int i = 0; visual_msg[i] != '\0'; i++) {
+        vga[i * 2] = visual_msg[i];
+        vga[i * 2 + 1] = 0x0F; // White on black
     }
 
-    // Initialize Interrupt Descriptor Table & Keyboard IRQ1
+    // Initialize structures safely
     idt_init();
+    mouse_init();
 
     while (1) {
-        __asm__ volatile("hlt"); // Halt CPU until next interrupt arrives
+        __asm__ volatile("hlt");
     }
 }

@@ -1,9 +1,11 @@
+ENTRY(_loader)
+
 SECTIONS
 {
     . = 0x9000;
     
     .text : {
-        boot/kernel_entry.o(.ktext)
+        boot/kernel_entry.o(.text)
         *(.text)
     }
 
@@ -17,7 +19,6 @@ SECTIONS
 
     .bss : {
         *(COMMON)
-        boot/kernel_entry.o(.kbss)
         *(.bss)
     }
 }

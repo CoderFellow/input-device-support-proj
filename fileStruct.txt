@@ -1,0 +1,665 @@
+
+C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj>dir /s
+ Volume in drive C has no label.
+ Volume Serial Number is 58DD-F7BE
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj
+
+21/09/2026  05:38 pm    <DIR>          .
+22/09/2026  08:57 am    <DIR>          ..
+21/09/2026  02:23 pm                 1 .gitignore
+21/09/2026  05:38 pm    <DIR>          boot
+21/09/2026  05:38 pm    <DIR>          kernel
+21/09/2026  05:37 pm               380 linker.ld
+21/09/2026  05:36 pm             1,113 Makefile
+21/09/2026  05:38 pm            41,896 os-image.bin
+21/09/2026  03:15 pm             3,310 README.md
+21/09/2026  05:38 pm                 0 serial.log
+               6 File(s)         46,700 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git
+
+21/09/2026  05:38 pm    <DIR>          ..
+21/09/2026  05:17 pm                62 COMMIT_EDITMSG
+21/09/2026  02:05 pm               319 config
+21/09/2026  02:02 pm                73 description
+21/09/2026  02:05 pm                21 HEAD
+21/09/2026  02:02 pm    <DIR>          hooks
+21/09/2026  05:17 pm             1,815 index
+21/09/2026  02:02 pm    <DIR>          info
+21/09/2026  02:04 pm    <DIR>          logs
+21/09/2026  05:17 pm    <DIR>          objects
+21/09/2026  02:05 pm    <DIR>          refs
+               5 File(s)          2,290 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\hooks
+
+21/09/2026  02:02 pm    <DIR>          .
+21/09/2026  02:02 pm               478 applypatch-msg.sample
+21/09/2026  02:02 pm               896 commit-msg.sample
+21/09/2026  02:02 pm             4,726 fsmonitor-watchman.sample
+21/09/2026  02:02 pm               189 post-update.sample
+21/09/2026  02:02 pm               424 pre-applypatch.sample
+21/09/2026  02:02 pm             1,649 pre-commit.sample
+21/09/2026  02:02 pm               416 pre-merge-commit.sample
+21/09/2026  02:02 pm             1,374 pre-push.sample
+21/09/2026  02:02 pm             4,898 pre-rebase.sample
+21/09/2026  02:02 pm               544 pre-receive.sample
+21/09/2026  02:02 pm             1,492 prepare-commit-msg.sample
+21/09/2026  02:02 pm             2,783 push-to-checkout.sample
+21/09/2026  02:02 pm             2,308 sendemail-validate.sample
+21/09/2026  02:02 pm             3,650 update.sample
+              14 File(s)         25,827 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\info
+
+21/09/2026  02:02 pm    <DIR>          .
+21/09/2026  02:02 pm               240 exclude
+               1 File(s)            240 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\logs
+
+21/09/2026  02:04 pm    <DIR>          .
+21/09/2026  05:17 pm             1,989 HEAD
+21/09/2026  02:05 pm    <DIR>          refs
+               1 File(s)          1,989 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\logs\refs
+
+21/09/2026  02:05 pm    <DIR>          .
+21/09/2026  02:04 pm    <DIR>          ..
+21/09/2026  02:05 pm    <DIR>          heads
+21/09/2026  02:05 pm    <DIR>          remotes
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\logs\refs\heads
+
+21/09/2026  02:05 pm    <DIR>          .
+21/09/2026  02:05 pm    <DIR>          ..
+21/09/2026  05:17 pm             1,796 main
+               1 File(s)          1,796 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\logs\refs\remotes
+
+21/09/2026  02:05 pm    <DIR>          .
+21/09/2026  02:05 pm    <DIR>          ..
+21/09/2026  02:05 pm    <DIR>          origin
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\logs\refs\remotes\origin
+
+21/09/2026  02:05 pm    <DIR>          .
+21/09/2026  02:05 pm    <DIR>          ..
+21/09/2026  02:08 pm               310 main
+               1 File(s)            310 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects
+
+21/09/2026  05:17 pm    <DIR>          .
+21/09/2026  05:16 pm    <DIR>          00
+21/09/2026  05:16 pm    <DIR>          01
+21/09/2026  04:43 pm    <DIR>          05
+21/09/2026  03:42 pm    <DIR>          07
+21/09/2026  03:15 pm    <DIR>          0b
+21/09/2026  03:25 pm    <DIR>          0e
+21/09/2026  03:42 pm    <DIR>          0f
+21/09/2026  03:12 pm    <DIR>          11
+21/09/2026  05:16 pm    <DIR>          1e
+21/09/2026  05:17 pm    <DIR>          20
+21/09/2026  03:25 pm    <DIR>          21
+21/09/2026  03:12 pm    <DIR>          2a
+21/09/2026  04:43 pm    <DIR>          32
+21/09/2026  04:43 pm    <DIR>          37
+21/09/2026  05:17 pm    <DIR>          3a
+21/09/2026  02:04 pm    <DIR>          4b
+21/09/2026  04:43 pm    <DIR>          4e
+21/09/2026  03:15 pm    <DIR>          4f
+21/09/2026  04:43 pm    <DIR>          5f
+21/09/2026  03:42 pm    <DIR>          60
+21/09/2026  04:43 pm    <DIR>          61
+21/09/2026  03:42 pm    <DIR>          66
+21/09/2026  03:25 pm    <DIR>          6f
+21/09/2026  04:43 pm    <DIR>          77
+21/09/2026  03:12 pm    <DIR>          79
+21/09/2026  03:12 pm    <DIR>          80
+21/09/2026  03:26 pm    <DIR>          82
+21/09/2026  03:42 pm    <DIR>          83
+21/09/2026  03:42 pm    <DIR>          86
+21/09/2026  04:43 pm    <DIR>          8f
+21/09/2026  03:12 pm    <DIR>          91
+21/09/2026  05:16 pm    <DIR>          94
+21/09/2026  03:25 pm    <DIR>          95
+21/09/2026  03:25 pm    <DIR>          96
+21/09/2026  03:25 pm    <DIR>          99
+21/09/2026  05:16 pm    <DIR>          a5
+21/09/2026  03:12 pm    <DIR>          ab
+21/09/2026  02:04 pm    <DIR>          ad
+21/09/2026  05:16 pm    <DIR>          b0
+21/09/2026  03:15 pm    <DIR>          b1
+21/09/2026  05:17 pm    <DIR>          b2
+21/09/2026  03:25 pm    <DIR>          b7
+21/09/2026  04:43 pm    <DIR>          c7
+21/09/2026  03:26 pm    <DIR>          ca
+21/09/2026  04:43 pm    <DIR>          cd
+21/09/2026  02:04 pm    <DIR>          ce
+21/09/2026  05:16 pm    <DIR>          d6
+21/09/2026  05:17 pm    <DIR>          d8
+21/09/2026  04:43 pm    <DIR>          d9
+21/09/2026  02:07 pm    <DIR>          de
+21/09/2026  03:15 pm    <DIR>          e1
+21/09/2026  03:42 pm    <DIR>          e3
+21/09/2026  05:16 pm    <DIR>          e5
+21/09/2026  03:42 pm    <DIR>          e6
+21/09/2026  05:16 pm    <DIR>          ec
+21/09/2026  03:12 pm    <DIR>          ee
+21/09/2026  03:12 pm    <DIR>          f4
+21/09/2026  03:25 pm    <DIR>          f7
+21/09/2026  04:43 pm    <DIR>          fb
+21/09/2026  02:02 pm    <DIR>          info
+21/09/2026  02:02 pm    <DIR>          pack
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\00
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               946 81c1d341474e7c97a604bb746a93e11370500e
+21/09/2026  04:43 pm               319 c4f985fb5c75883a487f1933654282305de9a4
+               2 File(s)          1,265 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\01
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               367 b6f7d4c3f7fae98ad8f4ffbd8c51b9f4e6caad
+               1 File(s)            367 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\05
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               183 5d49b620800f5a812d31f6d8d0d64c28150379
+               1 File(s)            183 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\07
+
+21/09/2026  03:42 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:42 pm               214 e8429146b957a35ec2de8fbdd9b47c3eb74757
+               1 File(s)            214 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\0b
+
+21/09/2026  03:15 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:15 pm               177 480e542c03cc8ce60b62e8eab48ed5fd17b521
+               1 File(s)            177 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\0e
+
+21/09/2026  03:25 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               321 a4da4658334ac8e857ca879c0a4a8f6cdb7101
+               1 File(s)            321 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\0f
+
+21/09/2026  03:42 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:42 pm               190 26a2c52bb34f00803e446d9f457f2889d8c7b7
+               1 File(s)            190 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\11
+
+21/09/2026  03:12 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm                53 eb0ee36cfb09063b07d4ef98bd7fe2769203f9
+               1 File(s)             53 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\1e
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               183 088a673df898ea89b6b3383b17555c59c52c3f
+               1 File(s)            183 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\20
+
+21/09/2026  05:17 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:17 pm               199 58bea879aab990474fe9125eb122671b7609c4
+               1 File(s)            199 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\21
+
+21/09/2026  03:25 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:25 pm               115 f3c016b3a429276aafbbd39ae548fc26790fa6
+               1 File(s)            115 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\2a
+
+21/09/2026  03:12 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm               205 497074a4774e238d126caeb4ebe83412861608
+               1 File(s)            205 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\32
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               422 11658ef05ebb5728c72d6dbe0c340ff8bf7169
+21/09/2026  03:12 pm             1,755 3d702576da90604d61d699228c6b76a948c96a
+               2 File(s)          2,177 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\37
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               159 29d2316a50578b6e1711888aff586b2b5a1710
+               1 File(s)            159 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\3a
+
+21/09/2026  05:17 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:17 pm               117 04887bf1e6c9130e1c63d17d0019d52c51f3bd
+               1 File(s)            117 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\4b
+
+21/09/2026  02:04 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  02:04 pm                15 825dc642cb6eb9a060e54bf8d69288fbee4904
+               1 File(s)             15 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\4e
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               156 57d4b83ebf74e25966e5eda87a4bd586fed4ce
+               1 File(s)            156 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\4f
+
+21/09/2026  03:15 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:15 pm             1,751 19d23e6070c06642bc47bde28f54727e1bb2b3
+21/09/2026  03:15 pm               213 3fe9f87c9c7165bd629b147bb803589c1d9328
+               2 File(s)          1,964 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\5f
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               389 b5ed0109ebdf33964ca34786f58219ce48d803
+               1 File(s)            389 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\60
+
+21/09/2026  03:42 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               231 24c754ec66a3abb7e2af272b990cbbdae3be0b
+               1 File(s)            231 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\61
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               747 0608d1251cf1b6070ce6cd2f813f618297bcd5
+               1 File(s)            747 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\66
+
+21/09/2026  03:42 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:42 pm               292 73d1c82fcf5bab5d9e91247e69d5a6a0036084
+21/09/2026  03:26 pm               213 e844992384ee8093281dc3ef3cf1c7725c296f
+               2 File(s)            505 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\6f
+
+21/09/2026  03:25 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:25 pm               279 92b435b4dd4512c4879654f02b798d4e8d229a
+21/09/2026  02:07 pm               630 c74be7c4c507500c78f2a6b5dc11adcc06f688
+               2 File(s)            909 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\77
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               193 8d14ce1b7134b1406a5e64bb4bff7a58395b58
+               1 File(s)            193 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\79
+
+21/09/2026  03:12 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm               213 cbfccb7a1451115ad8f7225a7a675fd2f357d8
+               1 File(s)            213 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\80
+
+21/09/2026  03:12 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm               182 f431cafe4733aec6be65b834b8b080ad1d2a00
+               1 File(s)            182 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\82
+
+21/09/2026  03:26 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:26 pm               303 18dc5049afc6cfd7e54929e26d67a25e9703b4
+               1 File(s)            303 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\83
+
+21/09/2026  03:42 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:42 pm               329 c9dee834a969db3b891a59ee8093f92d56475a
+               1 File(s)            329 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\86
+
+21/09/2026  03:42 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:42 pm               355 ace8c58399399cc6848554be1ae0f31a339df1
+               1 File(s)            355 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\8f
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm               280 07388a27a1c4faee154d8573f20a55a96defb6
+21/09/2026  04:43 pm               307 83fc71e79c9b99dcdac6ea31c3f501163a306f
+               2 File(s)            587 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\91
+
+21/09/2026  03:12 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm                20 ca0fad0eed0693c32237b7cb5da41f7fdf3464
+               1 File(s)             20 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\94
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               492 31854249edef5c1fff9ac7994dcdeacf52e307
+21/09/2026  02:04 pm                54 3c4f269e83eeefdfb2dbed4f3b85323e913d1c
+               2 File(s)            546 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\95
+
+21/09/2026  03:25 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:25 pm               450 d07cd36a85d2898059ef5521771f871a5c2a05
+               1 File(s)            450 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\96
+
+21/09/2026  03:25 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  02:07 pm               187 1968b9aeb18c2d635ea7e1ca89777f9ec5762b
+21/09/2026  05:16 pm               534 1de0e3b6b5e3a42e5d79c502cb93a83763e9ec
+               2 File(s)            721 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\99
+
+21/09/2026  03:25 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               370 1ae85280b6af6fdb991269c5f19ad78f37813f
+               1 File(s)            370 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\a5
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm               329 bab62e824b8534efea9a282357dfabfdd92d65
+21/09/2026  05:16 pm               937 ef41c4b11d458675881bbea7ed8fb8ba74e355
+               2 File(s)          1,266 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\ab
+
+21/09/2026  03:12 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm               321 8d735671e7df69a6b673a2c6b8d89368438d66
+               1 File(s)            321 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\ad
+
+21/09/2026  02:04 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  02:04 pm               133 0636b43d6d2af3b96392151fc5b3f9dab78fc5
+               1 File(s)            133 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\b0
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               479 16fd51a2d648627a84adbdedfabf5b58706230
+               1 File(s)            479 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\b1
+
+21/09/2026  03:15 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:15 pm               459 f842b0af10c1cd7f51db0fd2d169c5f3d353b6
+               1 File(s)            459 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\b2
+
+21/09/2026  05:17 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:17 pm               250 1a26adb95a1e07d5ea6118d2fe54bc5d8362e4
+21/09/2026  03:12 pm               670 d3c50416a2d0f849fc0b81aaf900966ee6f5df
+               2 File(s)            920 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\b7
+
+21/09/2026  03:25 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:42 pm               520 97885c26e46ba5d26928cb0f6249d702246790
+21/09/2026  03:12 pm                16 d5379f9e3bb741760e46cf87c89b081f8f44d9
+               2 File(s)            536 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\c7
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               507 d9924f857e43974314f4d7eeab07076033b3a2
+               1 File(s)            507 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\ca
+
+21/09/2026  03:26 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:26 pm               214 7a84620897584384fe05c1045d21655b99c8bc
+               1 File(s)            214 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\cd
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm                78 63487c119307de97d2a07c2c2b720491e482c5
+               1 File(s)             78 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\ce
+
+21/09/2026  02:04 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  02:04 pm                52 41e4e81096cf1da032f7ff6edfc0a6d37872d3
+               1 File(s)             52 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\d6
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               144 86b26335998681ef15c6c320fd90c51a59d3d8
+               1 File(s)            144 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\d8
+
+21/09/2026  05:17 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:17 pm               389 fdd1df420fcf0660440685faaed7b74bbf67a0
+               1 File(s)            389 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\d9
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               250 d449a1bffaca272ce28ed43485312db95db2c6
+               1 File(s)            250 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\de
+
+21/09/2026  02:07 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  02:07 pm                54 15832512edcfb731bdf57153b67bb459506c8b
+               1 File(s)             54 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\e1
+
+21/09/2026  03:15 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:15 pm                53 155737d978d1eb70d62d7304847a6cd692359b
+               1 File(s)             53 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\e3
+
+21/09/2026  03:42 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:42 pm                78 e357393d93e43e4a7d15ea2d49d1dc2030cdc4
+               1 File(s)             78 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\e5
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               194 5239d045fea75e122eaeb651844d12d5c9411c
+               1 File(s)            194 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\e6
+
+21/09/2026  03:42 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:42 pm               462 482831bb473a4bca6e7346b7d7e02a410ceb04
+               1 File(s)            462 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\ec
+
+21/09/2026  05:16 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  05:16 pm               566 8fe9aebeec362493446b07d63c1b50fcefbe79
+               1 File(s)            566 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\ee
+
+21/09/2026  03:12 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm               745 8b4aaaf9e67b470b97a8923afaa30371263dd2
+               1 File(s)            745 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\f4
+
+21/09/2026  03:12 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:12 pm               195 f3edce35eb368069491eebc0d452213e37a219
+               1 File(s)            195 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\f7
+
+21/09/2026  03:25 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  03:25 pm               674 9c0df2531e3ba45408c1679b5df96e7cd7f3b9
+               1 File(s)            674 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\fb
+
+21/09/2026  04:43 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+21/09/2026  04:43 pm               359 a3a4f59e1b04edd99b6b66a53ac9dde0a53467
+               1 File(s)            359 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\info
+
+21/09/2026  02:02 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\objects\pack
+
+21/09/2026  02:02 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\refs
+
+21/09/2026  02:05 pm    <DIR>          .
+21/09/2026  05:17 pm    <DIR>          heads
+21/09/2026  02:05 pm    <DIR>          remotes
+21/09/2026  02:02 pm    <DIR>          tags
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\refs\heads
+
+21/09/2026  05:17 pm    <DIR>          .
+21/09/2026  02:05 pm    <DIR>          ..
+21/09/2026  05:17 pm                41 main
+               1 File(s)             41 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\refs\remotes
+
+21/09/2026  02:05 pm    <DIR>          .
+21/09/2026  02:05 pm    <DIR>          ..
+21/09/2026  02:08 pm    <DIR>          origin
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\refs\remotes\origin
+
+21/09/2026  02:08 pm    <DIR>          .
+21/09/2026  02:05 pm    <DIR>          ..
+21/09/2026  02:08 pm                41 main
+               1 File(s)             41 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\.git\refs\tags
+
+21/09/2026  02:02 pm    <DIR>          .
+21/09/2026  02:05 pm    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\boot
+
+21/09/2026  05:38 pm    <DIR>          .
+21/09/2026  05:38 pm    <DIR>          ..
+21/09/2026  05:12 pm             2,112 boot.asm
+21/09/2026  05:37 pm               428 kernel_entry.asm
+21/09/2026  05:38 pm               421 kernel_entry.o
+               3 File(s)          2,961 bytes
+
+ Directory of C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj\kernel
+
+21/09/2026  05:38 pm    <DIR>          .
+21/09/2026  05:38 pm    <DIR>          ..
+21/09/2026  03:23 pm               688 graphics.c
+21/09/2026  05:38 pm               609 graphics.o
+21/09/2026  05:28 pm             1,588 idt.c
+21/09/2026  05:38 pm             1,146 idt.o
+21/09/2026  03:47 pm               286 interrupt.asm
+21/09/2026  05:38 pm               272 interrupt.o
+21/09/2026  05:24 pm               883 kernel.c
+21/09/2026  03:03 pm               517 kernel.h
+21/09/2026  05:38 pm               937 kernel.o
+21/09/2026  05:21 pm             1,362 keyboard.c
+21/09/2026  05:38 pm               932 keyboard.o
+21/09/2026  05:22 pm             2,725 mouse.c
+21/09/2026  05:38 pm             1,695 mouse.o
+              13 File(s)         13,640 bytes
+
+     Total Files Listed:
+             117 File(s)        120,073 bytes
+             226 Dir(s)  160,588,492,800 bytes free
+
+C:\Users\Carlos\Desktop\Lab4o\input-device-support-proj>
