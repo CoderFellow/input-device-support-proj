@@ -1,5 +1,9 @@
 #include "kernel.h"
 
+// Explicit function prototypes to satisfy GCC 
+void serial_print(const char* str);
+void idt_init(void);
+void keyboard_install(void);
 void mouse_init(void);
 
 // Explicitly send characters inline to avoid pointer offset lookups
@@ -30,7 +34,11 @@ void kernel_main(void) {
 
     // Initialize structures safely
     idt_init();
-    mouse_init();
+    keyboard_install();  // Installs the keyboard IRQ handler[cite: 5, 6]
+    mouse_init();        //[cite: 6]
+
+    // Enable hardware interrupts globally so keyboard events can fire!
+    __asm__ volatile("sti");
 
     while (1) {
         __asm__ volatile("hlt");

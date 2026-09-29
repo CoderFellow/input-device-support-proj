@@ -1,4 +1,8 @@
 #include "kernel.h"
+// Add this declaration if not already present
+void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);
+
+extern void keyboard_handler_stub(void);
 
 const char scancode_ascii[128] = {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
@@ -29,6 +33,17 @@ void keyboard_handler_main(void) {
         }
     }
     outb(0x20, 0x20);
+}
+
+
+void keyboard_install(void) {
+    // Map IRQ1 (keyboard) to offset 0x21 or your IDT vector entry
+    // Assuming your IDT setup maps IRQ1 to vector 33 (0x21)
+    idt_set_gate(33, (uint32_t)keyboard_handler_stub, 0x08, 0x8E);
+
+    // Enable keyboard interrupt on the PIC (Clear mask for IRQ 1)
+    uint8_t mask = inb(0x21);
+    outb(0x21, mask & ~(1 << 1));
 }
 
 __asm__ (
