@@ -9,96 +9,45 @@ _start:
     mov ss, ax
     mov sp, 0x7C00
 
-    ; Save the boot drive supplied by BIOS
     mov [BOOT_DRIVE], dl
 
-    ; Reset disk system
-    mov ah, 0
+    ; --- Read kernel sectors using standard CHS (AH = 0x02) ---
+    ; We need to load 76 sectors starting from Cylinder 0, Head 0, Sector 2
+    mov bx, 0x9000          ; Destination memory offset
+    mov dh, 0               ; Head 0
+    mov ch, 0               ; Cylinder 0
+    mov cl, 2               ; Sector 2 (Sector 1 is our boot sector)
+    mov al, 76              ; Read 76 sectors total
+
+.read_loop:
+    mov ah, 0x02            ; BIOS read sector function
     mov dl, [BOOT_DRIVE]
     int 0x13
-    jc .disk_error
+    jc .disk_error          ; If carry flag set, read failed
 
-    ; --- LOAD KERNEL INTO 0x9000 ---
-    ; We need to load 76 sectors total. 
-    ; Let's load them in safe, large contiguous chunks using es:bx = 0x0900:0x0000.
-    
-    mov ax, 0x0900
-    mov es, ax
-    xor bx, bx          ; ES:BX = 0x0900:0x0000 -> Linear 0x9000
-
-    ; Chunk 1: Read Track 0, Head 0, Sectors 2 to 18 (17 sectors)
-    mov ah, 0x02
-    mov al, 17          
-    mov ch, 0           
-    mov dh, 0           
-    mov cl, 2           
-    mov dl, [BOOT_DRIVE]
-    int 0x13
-    jc .disk_error
-
-    ; Advance buffer pointer by 17 sectors * 512 bytes = 8704 bytes (0x2200)
-    mov bx, 0x2200
-
-    ; Chunk 2: Read Track 0, Head 1, Sectors 1 to 18 (18 sectors)
-    mov ah, 0x02
-    mov al, 18          
-    mov ch, 0           
-    mov dh, 1           
-    mov cl, 1           
-    mov dl, [BOOT_DRIVE]
-    int 0x13
-    jc .disk_error
-
-    ; Advance buffer pointer by another 18 sectors * 512 bytes = 9216 bytes (0x2400 -> total offset 0x4600)
-    add bx, 0x2400
-
-    ; Chunk 3: Read Track 1, Head 0, Sectors 1 to 18 (18 sectors)
-    mov ah, 0x02
-    mov al, 18          
-    mov ch, 1           
-    mov dh, 0           
-    mov cl, 1           
-    mov dl, [BOOT_DRIVE]
-    int 0x13
-    jc .disk_error
-
-    ; Advance buffer pointer by another 18 sectors (0x2400 -> total offset 0x6A00)
-    add bx, 0x2400
-
-    ; Chunk 4: Read remaining sectors (76 total - 17 - 18 - 18 = 23 sectors remaining)
-    ; Let's read Track 1, Head 1, Sectors 1 to 23
-    mov ah, 0x02
-    mov al, 23          
-    mov ch, 1           
-    mov dh, 1           
-    mov cl, 1           
-    mov dl, [BOOT_DRIVE]
-    int 0x13
-    jc .disk_error
-
-    ; --- All 76 sectors loaded successfully! ---
-
-    ; Enable A20 Gate safely
+    ; Enable A20 Gate
     in al, 0x92
     or al, 2
     out 0x92, al
 
-    ; Load global descriptor table
+    ; Switch to Protected Mode
     lgdt [gdt_descriptor]
-
-    ; Switch to 32-bit Protected Mode
     mov eax, cr0
     or eax, 1
     mov cr0, eax
 
-    ; Far jump to protected mode entry
     jmp CODE_SEG:init_pm
 
 .disk_error:
+    ; Visual error marker: print red 'E' at 0xB8000
+    mov byte [0x8000], 'E'  ; Wait, let's keep it safe without memory warnings:
     cli
     hlt
     jmp .disk_error
 
+BOOT_DRIVE db 0
+
+; --- Protected Mode Setup ---
 align 16
 bits 32
 init_pm:
@@ -109,17 +58,13 @@ init_pm:
     mov gs, ax
     mov ss, ax
 
-    ; Set up 32-bit stack
     mov esp, 0x90000
     mov ebp, esp
 
-    ; Jump straight into the C kernel
+    ; Jump to C kernel entry at 0x9000
     jmp 0x9000
 
-; --- Variable storage ---
-BOOT_DRIVE db 0
-
-; --- Global Descriptor Table (GDT) ---
+; --- GDT ---
 align 4
 gdt_start:
 gdt_null:

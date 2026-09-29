@@ -6,9 +6,14 @@ extern _kernel_main
 
 _loader:
     cli                 ; Clear hardware interrupts during environment setup
-    mov esp, 0x90000    ; FIXED: Establish stack pointer cleanly at safe high memory
-    mov ebp, esp        ; Clear base pointer frame tracking row
-    call _kernel_main   ; Enter your working C main method loop
+    
+    ; --- VISUAL PROOF: Write bright green 'K' at top-left of VGA screen ---
+    mov byte [0xB8000], 'K'
+    mov byte [0xB8001], 0x0A
+
+    mov esp, 0x90000    ; Establish stack pointer cleanly
+    mov ebp, esp        
+    call _kernel_main   ; Enter your C main method
 
 .hang:
     cli
