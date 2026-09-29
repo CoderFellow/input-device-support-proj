@@ -54,7 +54,7 @@ os-image.bin: $(OBJ)
 	
 	# 4. FIXED: Concatenate targets and pad out to an absolute 1.44MB physical layout geometry
 	cat boot.bin kernel.bin > os-image.tmp
-	rm -f boot.bin kernel.bin
+	# rm -f boot.bin kernel.bin
 	dd if=os-image.tmp of=os-image.bin bs=1440k count=1 conv=sync
 	rm -f os-image.tmp
 
