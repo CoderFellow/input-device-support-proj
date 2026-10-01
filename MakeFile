@@ -62,3 +62,35 @@ os-image.bin: $(OBJ)
 
 clean:
 	rm -f kernel/*.o boot/*.o *.bin *.tmp
+
+# ==========================================
+# Host-Side Unit Testing Configuration
+# ==========================================
+HOST_CC = gcc
+HOST_CFLAGS = -Wall -Wextra -Ikernel -DTEST_ENVIRONMENT
+
+# Define test object files separately from kernel objects
+TEST_OBJ = kernel/keyboard_test.o \
+           kernel/mouse_test.o \
+           tests/test_runner.o
+
+# Run tests via: make test
+test: test_runner
+	./test_runner.exe
+
+test_runner: $(TEST_OBJ)
+	$(HOST_CC) $(HOST_CFLAGS) -o test_runner $(TEST_OBJ)
+
+# Host compilation rules for drivers under test
+kernel/keyboard_test.o: kernel/keyboard.c
+	$(HOST_CC) $(HOST_CFLAGS) -c $< -o $@
+
+kernel/mouse_test.o: kernel/mouse.c
+	$(HOST_CC) $(HOST_CFLAGS) -c $< -o $@
+
+tests/test_runner.o: tests/test_runner.c
+	$(HOST_CC) $(HOST_CFLAGS) -c $< -o $@
+
+# Update clean rule to remove test binaries and test objects
+clean-test:
+	rm -f kernel/*_test.o tests/*.o test_runner.exe test_runner

@@ -1,57 +1,138 @@
-# input device support
+# Input Device Support Operating System - Project Documentation
 
-## Keyboard Driver (IRQ1)
-
-### Reliable interrupt-driven keyboard input, scancode translation, and circular buffering.
-
-> PIC & IDT Initialization:** Remap the Programmable Interrupt Controller (PIC) chips (Master and Slave) and write an assembly stub to register the Interrupt Service Routine (ISR) for IRQ1 at interrupt vector `0x21`.
-> Port Communication (`inb`):** Implement the low-level port reading helper function to poll or capture raw Set 1 scancodes coming from IO port `0x60`.
-> Scancode Translation & Circular Queue:** Build a scancode-to-ASCII lookup array (handling key presses vs. releases via the `0x80` break bit) and push processed characters into a thread-safe circular buffer queue.
-> Milestone Check:** Type keys inside QEMU and verify they echo back correctly through your kernel's text or graphics output buffer.
-
----
-
-## PS/2 Mouse Driver (IRQ12)
-
-### auxiliary mouse device, catch 3-byte movement packets, and manage screen boundaries.
-
-> Controller Enable:** Send command byte `0xA8` to the PS/2 controller status port (`0x64`) to enable the auxiliary mouse port, and enable IRQ12 (vector `0x2C`). Set up the mouse streaming mode (`0xF4`).
+## 1. Introduction
 
 
-> **Packet Stream Parsing:** Catch incoming interrupts, maintaining a 3-byte packet index counter:
-> Byte 1: Status flags (Y overflow, X overflow, Sign bits, Left/Right button states).
-> Byte 2: Relative movement delta $dX$.
-> Byte 3: Relative movement delta $dY$.
+
+* **Project Name:** Input Device Support (`input-device-support-proj`)
 
 
-* **Boundary Clamping:** Convert relative deltas to absolute screen coordinates $(X, Y)$ and clamp them strictly within your current graphics mode resolution limits (e.g., $800 \times 600$ or $1024 \times 768$).
+* **Project Description:** This project is a bare-metal operating system prototype built to provide isolated emulation, processing, and visual rendering of keyboard and mouse input hardware.
+
+* **Core Objectives:**
+* Capture, decode, and process user keystrokes in real-time via hardware interrupt request lines.
+* Implement full auxiliary PS/2 mouse support featuring a functional on-screen cursor.
 
 ---
 
-#### **Block 3: Evening — Framebuffer Cursor & Report Documentation**
+## 2. System Overview
 
-*Objective: Render a stable visual cursor and capture your testing telemetry for the project report.*
-
-* **Double-Buffering / Pixel Saving:** Render a custom cursor pointer shape onto the VBE/linear framebuffer. Implement a background save-and-restore routine for underlying pixels to prevent visual trailing and ghosting artifacts.
-* **System Testing & Validation:** Boot the fully integrated kernel image inside `qemu-system-x86_64`. Perform simultaneous typing and mouse dragging to ensure no deadlock or interrupt starvation occurs.
-
-
-* **Report Logging:** Take screenshots of your QEMU window running the interactive input handlers. Immediately draft the text for **Section 5.4 (User Input Handling Implementation)** and **Section 6 (Testing and Validation)** for your major project report.
-
-
+* **Problem Statement:** Modern high-level operating systems abstract hardware interactions completely, concealing the mechanics of boot sequences, interrupt vector management, and raw device polling. This project establishes a transparent, low-level environment to handle hardware handshakes directly.
+* **Project Objectives:** Initialize bare-metal CPU structures, manage hardware interrupts, and cleanly coordinate communication between low-level input drivers and display subsystems.
+* **Scope of the System:** Covers 16-bit to 32-bit CPU protected-mode switching, IDT registration for IRQ1 (keyboard) and IRQ12 (mouse), and framebuffer/VGA rendering.
+* **System Limitations:** Restricted to x86 emulators (QEMU/Bochs) without multi-core Symmetric Multiprocessing (SMP) or advanced virtual memory paging.
 
 ---
 
-### ## Major Project Artifact Checklist
+## 3. Software Requirement Specifications (SRS)
 
-As you finish each block today, make sure you save these items to drop straight into your final submission:
 
-* [ ] **Source Code Files:** Cleanly commented C and assembly code for `keyboard.c`, `mouse.c`, `idt.asm`, and `isr.c`.
-* [ ] **Test Evidence:** QEMU terminal/graphic execution logs or screenshots showing keyboard echo and mouse cursor tracking.
-* [ ] **Drafting Content:** Bullet points detailing your interrupt vector numbers, port maps, and byte-parsing logic for Section 5.4 of the report.
+
+* **Functional Requirements:**
+* The system must read raw keyboard scancodes from port `0x60`, translate them into readable ASCII values, and process inputs reliably.
+
+
+* The system must capture real-time 3-byte movement packets from the PS/2 mouse auxiliary port and render a functional cursor on screen.
+
+
+* The kernel must seamlessly integrate asynchronous hardware events with graphic/text output to display live feedback.
+
+
+
+
+* **Non-Functional Requirements:**
+* **Performance:** Immediate response time to hardware interrupt requests with zero perceptible input lag.
+* **Reliability:** Stable execution without triple faults or unhandled CPU exceptions during continuous input streaming.
 
 
 
 ---
 
-Are you ready to tackle the Morning Block, and do you want to start with the assembly stub for the IDT setup or the C port-reading functions first?
+## 4. Software Analysis and Design
+
+
+
+* **System Architecture:** Written predominantly in C alongside low-level x86 Assembly.
+
+
+* **Bootloader Design:** Handles CPU initialization, switches the processor from Real Mode to Protected Mode, and loads the binary kernel image into memory (`boot/boot.asm`, `boot/kernel_entry.asm`).
+
+
+* **Kernel Design:** Manages core CPU operations, hardware handshakes, and sets up the Interrupt Descriptor Table (`kernel/idt.c`, `kernel/interrupt.asm`).
+
+
+* **Graphics System Design:** Manages screen display configurations, video memory mapping, and pixel/cursor rendering (`kernel/graphics.c`).
+
+
+* **User Input Handling:** Implements discrete device drivers for polling and handling hardware interrupts from keyboards (`kernel/keyboard.c`) and mice (`kernel/mouse.c`).
+
+
+
+---
+
+## 5. Development & Implementation
+
+
+
+* **Bootloader Implementation:** Configures the 512-byte MBR sector and loads subsequent sectors using BIOS disk services.
+* **Kernel Implementation:** Establishes stack pointers, maps the Global Descriptor Table (GDT), and transitions control to the main C entry point.
+* **Graphics Implementation:** Initializes screen buffer addresses (`0xb8000` for text or linear framebuffers for graphics) to paint shapes and cursors.
+* **User Input Handling:** Registers IRQ handlers via the Programmable Interrupt Controller (PIC) remapping sequence to capture scancodes and relative mouse movement deltas ($dX, dY$).
+
+---
+
+## 6. Testing & Validation
+
+
+
+* **Unit Test:** Validates isolated components, such as scancode translation arrays or individual port reading helper functions (`inb`/`outb`).
+
+
+* **Integration Test:** Ensures the IDT correctly routes keyboard (IRQ1) and mouse (IRQ12) hardware interrupts to their respective C driver handlers without dropping bits.
+
+
+* **System Test:** Runs the complete compiled OS image (`os-image.bin`) inside an emulator environment (`qemu-system-x86_64`) to verify end-to-end functionality.
+
+
+* **Performance Test:** Monitors CPU response times to asynchronous interrupt requests and reviews execution stability logs (`qemu_crash.log`).
+
+
+
+---
+
+## 7. Deployment
+
+
+
+* **Emulator Deployment:** Executed primarily within QEMU using raw drive configurations (`qemu-system-x86_64 -drive format=raw,file=os-image.bin`).
+
+
+* **Virtual Machine Setup:** Configured via modular Makefiles and linker scripts (`linker.ld`) to ensure seamless compilation across Linux and WSL developer environments.
+
+---
+
+## 8. Evaluation
+
+
+
+* **System Performance Evaluation:** The kernel successfully processes asynchronous input interrupts concurrently. Keystrokes echo instantly to the screen, and mouse cursor tracking remains smooth within defined screen boundaries.
+* **Limitations and Challenges:** Managing race conditions between simultaneous keyboard and mouse interrupts proved challenging, requiring careful circular buffer queuing and minimal overhead inside Interrupt Service Routines (ISRs).
+
+---
+
+## 9. Maintenance & Support
+
+
+
+* **Conclusion:** The project successfully demonstrates bare-metal operating system development, proving that low-level hardware communication, interrupt management, and device drivers can be built entirely from scratch without standard library dependencies.
+* **Future Enhancements:** Future iterations could expand support from legacy PS/2 devices to modern USB Human Interface Device (HID) protocols, add multi-tasking process scheduling, and implement dynamic GUI window management.
+
+---
+
+## 10. References
+
+
+
+* *Operating Systems: Three Easy Pieces* (Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau).
+* OSDev Wiki (Open Source Operating Systems Development Documentation - Port 0x60, PIC Remapping, and PS/2 Mouse Protocols).
+* DWU MC415 Course Lecture Notes and Lab Manuals.
