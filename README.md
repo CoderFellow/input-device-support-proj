@@ -74,10 +74,103 @@
 
 
 
-* **Bootloader Implementation:** Configures the 512-byte MBR sector and loads subsequent sectors using BIOS disk services.
-* **Kernel Implementation:** Establishes stack pointers, maps the Global Descriptor Table (GDT), and transitions control to the main C entry point.
-* **Graphics Implementation:** Initializes screen buffer addresses (`0xb8000` for text or linear framebuffers for graphics) to paint shapes and cursors.
-* **User Input Handling:** Registers IRQ handlers via the Programmable Interrupt Controller (PIC) remapping sequence to capture scancodes and relative mouse movement deltas ($dX, dY$).
+* **Bootloader Implementation**: 
+  * Structured as a 512-byte Master Boot Record (MBR) sector (ending with the `0xAA55` boot signature) starting at origin `0x7C00`.
+    [org 0x7c00]
+    bits 16
+
+    _start:
+        cli
+        xor ax, ax
+        mov ds, ax
+        mov es, ax
+        mov ss, ax
+        mov sp, 0x7C00
+
+  * Utilizes BIOS interrupt `0x13` (CHS disk reading) to load multiple sectors from disk into memory at `0x9000`.
+    .read_loop:
+    mov ah, 0x02            ; BIOS read sector function
+    mov dl, [BOOT_DRIVE]
+    int 0x13
+    jc .disk_error          ; If carry flag set, read failed
+
+    ; Enable A20 Gate
+    in al, 0x92
+    or al, 2
+    out 0x92, al
+
+    ; Switch to Protected Mode
+    lgdt [gdt_descriptor]
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
+
+    jmp CODE_SEG:init_pm    
+
+  * Enables the A20 line, loads a Global Descriptor Table (GDT), sets up protected mode via `cr0`, and jumps into the 32-bit execution environment.
+
+* **Kernel Implementation**: 
+  * Governed by a custom linker script (`linker.ld`) starting at physical address `0x9000`.
+    . = 0x9000;
+    .text : {
+        boot/kernel_entry.o(.text)
+        *(.text)
+    }
+  
+  * `kernel_main` (`kernel/kernel.c`) initializes serial output debugging (`0x3F8`), sets up the Interrupt Descriptor Table (`kernel/idt.c`), reprograms and remaps the PIC vector offsets, and enables global hardware interrupts via the `sti` instruction.
+    static inline void serial_putchar(char c) {
+    __asm__ volatile ("outb %0, %1" : : "a"(c), "Nd"((uint16_t)0x3F8));
+    }
+
+* **Graphics Implementation**: 
+  * Manages text rendering by writing characters and attribute bytes directly to the physical VGA text-mode memory buffer (`0xB8000`).
+
+  * Includes foundational stubs for VESA Linear Framebuffer pixel plotting (`kernel/graphics.c`).
+
+* **User Input Handling**: 
+  * **Keyboard Driver (`kernel/keyboard.c`)**: Maps interrupt vector `33` (`0x21`) to an assembly stub (`keyboard_handler_stub`), reads raw scancodes from port `0x60`, translates inputs via an ASCII conversion map, and updates sequential text coordinates on the VGA screen.
+    ```c
+    void keyboard_install(void) {
+        // Map IRQ1 (keyboard) to offset 0x21 or your IDT vector entry
+        idt_set_gate(33, (uint32_t)keyboard_handler_stub, 0x08, 0x8E);
+
+        // Enable keyboard interrupt on the PIC (Clear mask for IRQ 1)
+        uint8_t mask = inb(0x21);
+        outb(0x21, mask & ~(1 << 1));
+    }
+    ```
+  * **Mouse Driver (`kernel/mouse.c`)**: Enables the auxiliary PS/2 mouse channel through port `0x64`, initiates packet data streaming via command `0xF4`, parses 3-byte movement delta packets with sign extension, clamps coordinate bounds (0 to 79 X-axis, 0 to 24 Y-axis), and renders an active inverse-color block cursor.
+    ```c
+    void mouse_handler_main(void) {
+        uint8_t status = inb(0x64);
+        if (status & 0x01) { // Data available
+            if (status & 0x20) { // Mouse data bit set
+                mouse_packet[mouse_cycle++] = inb(0x60);
+                if (mouse_cycle == 3) {
+                    mouse_cycle = 0;
+                    
+                    int rel_x = (int)mouse_packet[1];
+                    int rel_y = (int)mouse_packet[2];
+                    
+                    if (mouse_packet[0] & 0x10) rel_x |= 0xFFFFFF00; // Sign extend X
+                    if (mouse_packet[0] & 0x20) rel_y |= 0xFFFFFF00; // Sign extend Y
+                    
+                    mouse_x += rel_x / 2;
+                    mouse_y -= rel_y / 2; // Invert axis logic
+                    
+                    if (mouse_x < 0) mouse_x = 0;
+                    if (mouse_x > 79) mouse_x = 79;
+                    if (mouse_y < 0) mouse_y = 0;
+                    if (mouse_y > 24) mouse_y = 24;
+                    
+                    draw_mouse_cursor(mouse_x, mouse_y);
+                }
+            }
+        }
+        outb(0xA0, 0x20); // Send EOI to Slave PIC
+        outb(0x20, 0x20); // Send EOI to Master PIC
+    }
+    ```
 
 ---
 
@@ -85,38 +178,50 @@
 
 
 
-* **Unit Test:** Validates isolated components, such as scancode translation arrays or individual port reading helper functions (`inb`/`outb`).
-
-
-* **Integration Test:** Ensures the IDT correctly routes keyboard (IRQ1) and mouse (IRQ12) hardware interrupts to their respective C driver handlers without dropping bits.
-
-
-* **System Test:** Runs the complete compiled OS image (`os-image.bin`) inside an emulator environment (`qemu-system-x86_64`) to verify end-to-end functionality.
-
-
-* **Performance Test:** Monitors CPU response times to asynchronous interrupt requests and reviews execution stability logs (`qemu_crash.log`).
-
+* **Unit Test**: 
+  * Validating isolated driver components, such as verifying that the scancode-to-ASCII translation lookup array correctly maps key presses.
+  * Testing individual algorithmic logic like the mouse packet sign-extension and axis-clamping functions (`mouse_x` and `mouse_y` boundary checks)[cite: 2].
+* **Integration Test**: 
+  * Ensuring the Interrupt Descriptor Table (IDT) and Programmable Interrupt Controller (PIC) correctly route hardware interrupts (IRQ1 for the keyboard and IRQ12 for the mouse) to their respective assembly stubs and C handlers (`keyboard_handler_main` and `mouse_handler_main`)[cite: 2].
+  * Verifying that proper End-of-Interrupt (EOI) commands (`outb(0x20, 0x20)`) are dispatched to prevent interrupt lockups or starvation[cite: 2].
+* **System Test**: 
+  * Deploying and executing the compiled OS floppy image (`os-image.bin`) within a QEMU x86 emulator environment.
+  * Performing live end-to-end verification by typing characters to update the VGA text buffer (`0xB8000`) and moving the physical mouse to render the inverse-color block cursor smoothly within screen boundaries ($0$ to $79$ X-axis, $0$ to $24$ Y-axis)[cite: 2].
+* **Performance Test**: 
+  * Monitoring CPU response latency to high-frequency asynchronous hardware interrupts from input peripherals.
+  * Tracking stability and inspecting serial debugging output (`0x3F8`) to confirm the kernel handles sustained inputs without exceptions or crashes.
 
 
 ---
 
 ## 7. Deployment
 
-
-
-* **Emulator Deployment:** Executed primarily within QEMU using raw drive configurations (`qemu-system-x86_64 -drive format=raw,file=os-image.bin`).
-
-
-* **Virtual Machine Setup:** Configured via modular Makefiles and linker scripts (`linker.ld`) to ensure seamless compilation across Linux and WSL developer environments.
+* **Emulator Deployment (QEMU/Bochs)**: 
+  * The primary deployment pipeline runs the generated raw flat binary image (`os-image.bin`) inside an x86 hardware emulator.
+  * Executed via QEMU using the standard system emulator target:
+    ```bash
+    qemu-system-i386 -fda os-image.bin
+    ```
+  * Configures emulated hardware components including the 8259 Programmable Interrupt Controller, PS/2 controller ports (`0x60`, `0x64`), and direct VGA text-mode memory output (`0xB8000`).
+* **Raspberry Pi Deployment**: 
+  * *Note on Architecture*: Because this custom kernel targets the 32-bit x86 (IA-32) architecture, booting natively on a Raspberry Pi (ARM-based BCM SoC) requires either an x86 emulation layer or cross-compilation to ARM bare-metal specifications (such as configuring the ARM vector table and PL011 UART/GPIO controllers). For this project's scope, physical deployment remains focused on x86-compatible environments.
+* **Virtual Machine Setup**: 
+  * Configured for deployment inside hypervisors such as Oracle VirtualBox or VMware Workstation by attaching `os-image.bin` as a legacy 1.44MB floppy disk image or raw bootable storage medium.
+  * Ensures proper BIOS legacy boot sequencing (`0x7C00` MBR signature check) before handing control over to the protected-mode kernel at physical address `0x9000`.
 
 ---
 
 ## 8. Evaluation
 
+* **System Performance Evaluation**:
+  * **Interrupt Latency & Responsiveness**: The kernel achieves near-instantaneous CPU response times for hardware inputs. By routing interrupts directly through the Interrupt Descriptor Table (IDT) via optimized assembly stubs (`keyboard_handler_stub` and `mouse_handler_stub`)[cite: 2], the delay between a physical keystroke or mouse movement and its visual execution is minimized.
+  * **Resource Efficiency**: Compiled freestanding (`-ffreestanding`, `-O2`) without standard library overhead, the kernel maintains an extremely lightweight footprint. The entire bootable OS image (`os-image.bin`) fits cleanly into a standard 1.44MB storage format and loads into memory instantaneously.
+  * **Visual Feedback & Rendering**: The mouse driver effectively processes 3-byte movement packets, handles sign extension, clamps coordinates securely within screen boundaries ($0$ to $79$ X-axis, $0$ to $24$ Y-axis), and renders an active inverse-color block cursor (`0x70`) onto the VGA text buffer (`0xB8000`) without visual artifacting or stutter[cite: 2].
 
-
-* **System Performance Evaluation:** The kernel successfully processes asynchronous input interrupts concurrently. Keystrokes echo instantly to the screen, and mouse cursor tracking remains smooth within defined screen boundaries.
-* **Limitations and Challenges:** Managing race conditions between simultaneous keyboard and mouse interrupts proved challenging, requiring careful circular buffer queuing and minimal overhead inside Interrupt Service Routines (ISRs).
+* **Limitations and Challenges**:
+  * **Asynchronous Interrupt Synchronization**: Managing concurrent, unpredictable hardware events from multiple peripherals (IRQ1 for keyboard and IRQ12 for the mouse) required meticulous PIC vector remapping and precise End-of-Interrupt (EOI) signaling (`outb(0x20, 0x20)` and `outb(0xA0, 0x20)`)[cite: 2] to prevent interrupt starvation or deadlocks.
+  * **Low-Level Development Constraints**: Operating entirely without standard library support meant all utilities—such as memory management, input parsing, and debugging hooks—had to be implemented from scratch using raw port I/O (`0x60`, `0x64`, `0x3F8`) and direct memory mapping.
+  * **Toolchain and Environment Compatibility**: Overcoming cross-platform compilation quirks, linker script layout configurations (`linker.ld`), and binary format conversions during the build pipeline required strict attention to low-level binary specifications.
 
 ---
 
