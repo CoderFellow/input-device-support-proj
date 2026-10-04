@@ -2,16 +2,11 @@
 
 ## 1. Introduction
 
-
-
 * **Project Name:** Input Device Support (`input-device-support-proj`)
-
-
 * **Project Description:** This project is a bare-metal operating system prototype built to provide isolated emulation, processing, and visual rendering of keyboard and mouse input hardware.
-
 * **Core Objectives:**
-* Capture, decode, and process user keystrokes in real-time via hardware interrupt request lines.
-* Implement full auxiliary PS/2 mouse support featuring a functional on-screen cursor.
+  * Capture, decode, and process user keystrokes in real-time via hardware interrupt request lines.
+  * Implement full auxiliary PS/2 mouse support featuring a functional on-screen cursor.
 
 ---
 
@@ -26,56 +21,31 @@
 
 ## 3. Software Requirement Specifications (SRS)
 
-
-
 * **Functional Requirements:**
-* The system must read raw keyboard scancodes from port `0x60`, translate them into readable ASCII values, and process inputs reliably.
-
-
-* The system must capture real-time 3-byte movement packets from the PS/2 mouse auxiliary port and render a functional cursor on screen.
-
-
-* The kernel must seamlessly integrate asynchronous hardware events with graphic/text output to display live feedback.
-
-
-
-
+  * The system must read raw keyboard scancodes from port `0x60`, translate them into readable ASCII values, and process inputs reliably.
+  * The system must capture real-time 3-byte movement packets from the PS/2 mouse auxiliary port and render a functional cursor on screen.
+  * The kernel must seamlessly integrate asynchronous hardware events with graphic/text output to display live feedback.
 * **Non-Functional Requirements:**
-* **Performance:** Immediate response time to hardware interrupt requests with zero perceptible input lag.
-* **Reliability:** Stable execution without triple faults or unhandled CPU exceptions during continuous input streaming.
-
-
+  * **Performance:** Immediate response time to hardware interrupt requests with zero perceptible input lag.
+  * **Reliability:** Stable execution without triple faults or unhandled CPU exceptions during continuous input streaming.
 
 ---
 
 ## 4. Software Analysis and Design
 
-
-
 * **System Architecture:** Written predominantly in C alongside low-level x86 Assembly.
-
-
 * **Bootloader Design:** Handles CPU initialization, switches the processor from Real Mode to Protected Mode, and loads the binary kernel image into memory (`boot/boot.asm`, `boot/kernel_entry.asm`).
-
-
 * **Kernel Design:** Manages core CPU operations, hardware handshakes, and sets up the Interrupt Descriptor Table (`kernel/idt.c`, `kernel/interrupt.asm`).
-
-
 * **Graphics System Design:** Manages screen display configurations, video memory mapping, and pixel/cursor rendering (`kernel/graphics.c`).
-
-
 * **User Input Handling:** Implements discrete device drivers for polling and handling hardware interrupts from keyboards (`kernel/keyboard.c`) and mice (`kernel/mouse.c`).
-
-
 
 ---
 
 ## 5. Development & Implementation
 
-
-
 * **Bootloader Implementation**: 
   * Structured as a 512-byte Master Boot Record (MBR) sector (ending with the `0xAA55` boot signature) starting at origin `0x7C00`.
+    ```assembly
     [org 0x7c00]
     bits 16
 
@@ -86,45 +56,48 @@
         mov es, ax
         mov ss, ax
         mov sp, 0x7C00
-
+    ```
   * Utilizes BIOS interrupt `0x13` (CHS disk reading) to load multiple sectors from disk into memory at `0x9000`.
+    ```assembly
     .read_loop:
-    mov ah, 0x02            ; BIOS read sector function
-    mov dl, [BOOT_DRIVE]
-    int 0x13
-    jc .disk_error          ; If carry flag set, read failed
+        mov ah, 0x02            ; BIOS read sector function
+        mov dl, [BOOT_DRIVE]
+        int 0x13
+        jc .disk_error          ; If carry flag set, read failed
 
-    ; Enable A20 Gate
-    in al, 0x92
-    or al, 2
-    out 0x92, al
+        ; Enable A20 Gate
+        in al, 0x92
+        or al, 2
+        out 0x92, al
 
-    ; Switch to Protected Mode
-    lgdt [gdt_descriptor]
-    mov eax, cr0
-    or eax, 1
-    mov cr0, eax
+        ; Switch to Protected Mode
+        lgdt [gdt_descriptor]
+        mov eax, cr0
+        or eax, 1
+        mov cr0, eax
 
-    jmp CODE_SEG:init_pm    
-
+        jmp CODE_SEG:init_pm    
+    ```
   * Enables the A20 line, loads a Global Descriptor Table (GDT), sets up protected mode via `cr0`, and jumps into the 32-bit execution environment.
 
 * **Kernel Implementation**: 
   * Governed by a custom linker script (`linker.ld`) starting at physical address `0x9000`.
+    ```ld
     . = 0x9000;
     .text : {
         boot/kernel_entry.o(.text)
         *(.text)
     }
-  
+    ```
   * `kernel_main` (`kernel/kernel.c`) initializes serial output debugging (`0x3F8`), sets up the Interrupt Descriptor Table (`kernel/idt.c`), reprograms and remaps the PIC vector offsets, and enables global hardware interrupts via the `sti` instruction.
+    ```c
     static inline void serial_putchar(char c) {
-    __asm__ volatile ("outb %0, %1" : : "a"(c), "Nd"((uint16_t)0x3F8));
+        __asm__ volatile ("outb %0, %1" : : "a"(c), "Nd"((uint16_t)0x3F8));
     }
+    ```
 
 * **Graphics Implementation**: 
   * Manages text rendering by writing characters and attribute bytes directly to the physical VGA text-mode memory buffer (`0xB8000`).
-
   * Includes foundational stubs for VESA Linear Framebuffer pixel plotting (`kernel/graphics.c`).
 
 * **User Input Handling**: 
@@ -172,25 +145,25 @@
     }
     ```
 
+* **Shell Interface**:
+  * While a full command-line interpreter shell is handled across development tasks, the kernel implements a primitive text-buffer input loop (`kernel/keyboard.c`). It captures real-time ASCII characters from the keyboard driver and streams them sequentially to the VGA text-mode memory buffer (`0xB8000`), establishing the foundational character-input infrastructure required for command line interaction.
+
 ---
 
 ## 6. Testing & Validation
 
-
-
 * **Unit Test**: 
   * Validating isolated driver components, such as verifying that the scancode-to-ASCII translation lookup array correctly maps key presses.
-  * Testing individual algorithmic logic like the mouse packet sign-extension and axis-clamping functions (`mouse_x` and `mouse_y` boundary checks)[cite: 2].
+  * Testing individual algorithmic logic like the mouse packet sign-extension and axis-clamping functions (`mouse_x` and `mouse_y` boundary checks).
 * **Integration Test**: 
-  * Ensuring the Interrupt Descriptor Table (IDT) and Programmable Interrupt Controller (PIC) correctly route hardware interrupts (IRQ1 for the keyboard and IRQ12 for the mouse) to their respective assembly stubs and C handlers (`keyboard_handler_main` and `mouse_handler_main`)[cite: 2].
-  * Verifying that proper End-of-Interrupt (EOI) commands (`outb(0x20, 0x20)`) are dispatched to prevent interrupt lockups or starvation[cite: 2].
+  * Ensuring the Interrupt Descriptor Table (IDT) and Programmable Interrupt Controller (PIC) correctly route hardware interrupts (IRQ1 for the keyboard and IRQ12 for the mouse) to their respective assembly stubs and C handlers (`keyboard_handler_main` and `mouse_handler_main`).
+  * Verifying that proper End-of-Interrupt (EOI) commands (`outb(0x20, 0x20)`) are dispatched to prevent interrupt lockups or starvation.
 * **System Test**: 
   * Deploying and executing the compiled OS floppy image (`os-image.bin`) within a QEMU x86 emulator environment.
-  * Performing live end-to-end verification by typing characters to update the VGA text buffer (`0xB8000`) and moving the physical mouse to render the inverse-color block cursor smoothly within screen boundaries ($0$ to $79$ X-axis, $0$ to $24$ Y-axis)[cite: 2].
+  * Performing live end-to-end verification by typing characters to update the VGA text buffer (`0xB8000`) and moving the physical mouse to render the inverse-color block cursor smoothly within screen boundaries ($0$ to $79$ X-axis, $0$ to $24$ Y-axis).
 * **Performance Test**: 
   * Monitoring CPU response latency to high-frequency asynchronous hardware interrupts from input peripherals.
   * Tracking stability and inspecting serial debugging output (`0x3F8`) to confirm the kernel handles sustained inputs without exceptions or crashes.
-
 
 ---
 
@@ -214,29 +187,25 @@
 ## 8. Evaluation
 
 * **System Performance Evaluation**:
-  * **Interrupt Latency & Responsiveness**: The kernel achieves near-instantaneous CPU response times for hardware inputs. By routing interrupts directly through the Interrupt Descriptor Table (IDT) via optimized assembly stubs (`keyboard_handler_stub` and `mouse_handler_stub`)[cite: 2], the delay between a physical keystroke or mouse movement and its visual execution is minimized.
+  * **Interrupt Latency & Responsiveness**: The kernel achieves near-instantaneous CPU response times for hardware inputs. By routing interrupts directly through the Interrupt Descriptor Table (IDT) via optimized assembly stubs (`keyboard_handler_stub` and `mouse_handler_stub`), the delay between a physical keystroke or mouse movement and its visual execution is minimized.
   * **Resource Efficiency**: Compiled freestanding (`-ffreestanding`, `-O2`) without standard library overhead, the kernel maintains an extremely lightweight footprint. The entire bootable OS image (`os-image.bin`) fits cleanly into a standard 1.44MB storage format and loads into memory instantaneously.
-  * **Visual Feedback & Rendering**: The mouse driver effectively processes 3-byte movement packets, handles sign extension, clamps coordinates securely within screen boundaries ($0$ to $79$ X-axis, $0$ to $24$ Y-axis), and renders an active inverse-color block cursor (`0x70`) onto the VGA text buffer (`0xB8000`) without visual artifacting or stutter[cite: 2].
+  * **Visual Feedback & Rendering**: The mouse driver effectively processes 3-byte movement packets, handles sign extension, clamps coordinates securely within screen boundaries ($0$ to $79$ X-axis, $0$ to $24$ Y-axis), and renders an active inverse-color block cursor (`0x70`) onto the VGA text buffer (`0xB8000`) without visual artifacting or stutter.
 
 * **Limitations and Challenges**:
-  * **Asynchronous Interrupt Synchronization**: Managing concurrent, unpredictable hardware events from multiple peripherals (IRQ1 for keyboard and IRQ12 for the mouse) required meticulous PIC vector remapping and precise End-of-Interrupt (EOI) signaling (`outb(0x20, 0x20)` and `outb(0xA0, 0x20)`)[cite: 2] to prevent interrupt starvation or deadlocks.
+  * **Asynchronous Interrupt Synchronization**: Managing concurrent, unpredictable hardware events from multiple peripherals (IRQ1 for keyboard and IRQ12 for the mouse) required meticulous PIC vector remapping and precise End-of-Interrupt (EOI) signaling (`outb(0x20, 0x20)` and `outb(0xA0, 0x20)`) to prevent interrupt starvation or deadlocks.
   * **Low-Level Development Constraints**: Operating entirely without standard library support meant all utilities—such as memory management, input parsing, and debugging hooks—had to be implemented from scratch using raw port I/O (`0x60`, `0x64`, `0x3F8`) and direct memory mapping.
   * **Toolchain and Environment Compatibility**: Overcoming cross-platform compilation quirks, linker script layout configurations (`linker.ld`), and binary format conversions during the build pipeline required strict attention to low-level binary specifications.
 
 ---
 
-## 9. Maintenance & Support
+## 9. Conclusion and Future Work
 
-
-
-* **Conclusion:** The project successfully demonstrates bare-metal operating system development, proving that low-level hardware communication, interrupt management, and device drivers can be built entirely from scratch without standard library dependencies.
-* **Future Enhancements:** Future iterations could expand support from legacy PS/2 devices to modern USB Human Interface Device (HID) protocols, add multi-tasking process scheduling, and implement dynamic GUI window management.
+* **9.1. Conclusion:** The project successfully demonstrates bare-metal operating system development, proving that low-level hardware communication, interrupt management, and device drivers can be built entirely from scratch without standard library dependencies.
+* **9.2. Future Enhancements:** Future iterations could expand support from legacy PS/2 devices to modern USB Human Interface Device (HID) protocols, add multi-tasking process scheduling, and implement dynamic GUI window management.
 
 ---
 
 ## 10. References
-
-
 
 * *Operating Systems: Three Easy Pieces* (Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau).
 * OSDev Wiki (Open Source Operating Systems Development Documentation - Port 0x60, PIC Remapping, and PS/2 Mouse Protocols).
