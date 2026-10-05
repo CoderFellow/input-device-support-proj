@@ -50,6 +50,6 @@
 
 ### **How to Run**
 ```
-mingw32-make -f Makefile
-qemu-system-i386 -fda os-image.bin
+mingw32-make -f Makefile & :: <--- this compiles the boot file
+qemu-system-i386 -fda os-image.bin <--- This executes the compiled boot file.
 ```
