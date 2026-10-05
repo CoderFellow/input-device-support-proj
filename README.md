@@ -42,16 +42,12 @@
 
 ---
 
-### ## Major Project Artifact Checklist
-
-As you finish each block today, make sure you save these items to drop straight into your final submission:
-
 * [ ] **Source Code Files:** Cleanly commented C and assembly code for `keyboard.c`, `mouse.c`, `idt.asm`, and `isr.c`.
 * [ ] **Test Evidence:** QEMU terminal/graphic execution logs or screenshots showing keyboard echo and mouse cursor tracking.
 * [ ] **Drafting Content:** Bullet points detailing your interrupt vector numbers, port maps, and byte-parsing logic for Section 5.4 of the report.
 
-
-
 ---
 
-Are you ready to tackle the Morning Block, and do you want to start with the assembly stub for the IDT setup or the C port-reading functions first?
+### **How to Run**
+'''mingw32-make -f Makefile
+qemu-system-i386 -fda os-image.bin'''
