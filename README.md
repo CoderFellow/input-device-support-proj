@@ -49,6 +49,7 @@
 ---
 
 ### **How to Run**
-```mingw32-make -f Makefile
+```
+mingw32-make -f Makefile
 qemu-system-i386 -fda os-image.bin
 ```
