@@ -14,7 +14,6 @@ void serial_print(const char* str) {
 void kernel_main(void) {
     serial_print("[KERNEL] Booted successfully!\n");
 
-    // VGA text buffer output
     char* vga = (char*) 0xB8000;
     const char* msg = "OS Prototype Loaded. Type away:";
     for (int i = 0; msg[i] != '\0'; i++) {
@@ -22,10 +21,10 @@ void kernel_main(void) {
         vga[i * 2 + 1] = 0x0F;
     }
 
-    // Initialize Interrupt Descriptor Table & Keyboard IRQ1
     idt_init();
+    mouse_install(); // Initialize the PS/2 mouse hardware
 
     while (1) {
-        __asm__ volatile("hlt"); // Halt CPU until next interrupt arrives
+        __asm__ volatile("hlt");
     }
 }

@@ -1,6 +1,7 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
+typedef signed char int8_t;
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -17,6 +18,7 @@ static inline void outb(uint16_t port, uint8_t val) {
 }
 
 void keyboard_install(void);
+void mouse_install(void);
 void idt_init(void);
 
 #endif

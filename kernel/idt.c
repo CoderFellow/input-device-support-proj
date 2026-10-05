@@ -17,6 +17,7 @@ struct idt_entry idt[256];
 struct idt_ptr idtp;
 
 extern void keyboard_handler_stub(void);
+extern void mouse_handler_stub(void);
 extern void idt_load(void);
 
 void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
@@ -40,9 +41,11 @@ void pic_remap(void) {
     // ICW4: Environment info
     outb(0x21, 0x01);
     outb(0xA1, 0x01);
-    // Mask interrupts except keyboard (IRQ1) and cascade
-    outb(0x21, 0xFD); // 1111 1101 (IRQ1 enabled)
-    outb(0xA1, 0xFF);
+
+    // Unmask IRQ1 (Keyboard) and IRQ2 (Cascade) on Master PIC: 1111 1001 = 0xF9
+    outb(0x21, 0xF9);
+    // Unmask IRQ12 (Mouse) on Slave PIC: 1110 1111 = 0xEF
+    outb(0xA1, 0xEF);
 }
 
 void idt_init(void) {
@@ -53,8 +56,10 @@ void idt_init(void) {
 
     // Map keyboard handler to IRQ1 (Vector 0x21)
     idt_set_gate(0x21, (unsigned long)keyboard_handler_stub, 0x08, 0x8E);
+    // Map mouse handler to IRQ12 (Vector 0x2C)
+    idt_set_gate(0x2C, (unsigned long)mouse_handler_stub, 0x08, 0x8E);
 
-    // Load IDT
+    // Load IDT and enable interrupts
     __asm__ volatile("lidt (%0)" : : "r" (&idtp));
-    __asm__ volatile("sti"); // Enable interrupts
+    __asm__ volatile("sti");
 }
